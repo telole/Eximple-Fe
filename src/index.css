@@ -1,0 +1,88 @@
+﻿@import "tailwindcss";
+
+/* Font ZT Nature Medium - Local File */
+@font-face {
+  font-family: 'ZT Nature';
+  src: url('/fonts/ZTNature-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Font ZT Nature Medium Configuration */
+.font-zt-nature {
+  font-family: 'ZT Nature', sans-serif;
+  font-weight: 500;
+}
+
+/* Ensure ZT Nature Medium is used by default */
+body {
+  font-family: 'ZT Nature', sans-serif;
+  font-weight: 500;
+}
+
+/* ============================================
+   CRITICAL: Force medium weight (500) for ALL ZT Nature elements
+   NO BOLD ALLOWED - This overrides Tailwind, browser defaults, and inline styles
+   ============================================ */
+
+/* Base override for all ZT Nature elements */
+.font-zt-nature,
+.font-\[ZT_Nature\],
+.font-\[\'ZT_Nature\'\] {
+  font-family: 'ZT Nature', sans-serif;
+  font-weight: 500 !important;
+}
+
+/* Global override for all elements with ZT Nature in class name */
+[class*="ZT_Nature"],
+[class*="ZT Nature"],
+*[class*="ZT_Nature"],
+*[class*="ZT Nature"] {
+  font-weight: 500 !important;
+}
+
+/* Override browser defaults for heading tags with ZT Nature */
+h1[class*="ZT"], h2[class*="ZT"], h3[class*="ZT"], h4[class*="ZT"], h5[class*="ZT"], h6[class*="ZT"],
+h1[class*="ZT_Nature"], h2[class*="ZT_Nature"], h3[class*="ZT_Nature"], h4[class*="ZT_Nature"], h5[class*="ZT_Nature"], h6[class*="ZT_Nature"],
+h1[class*="ZT Nature"], h2[class*="ZT Nature"], h3[class*="ZT Nature"], h4[class*="ZT Nature"], h5[class*="ZT Nature"], h6[class*="ZT Nature"],
+h1.font-zt-nature, h2.font-zt-nature, h3.font-zt-nature, h4.font-zt-nature, h5.font-zt-nature, h6.font-zt-nature {
+  font-weight: 500 !important;
+}
+
+/* Override Tailwind bold classes when combined with ZT Nature */
+.font-\[ZT_Nature\]\.font-bold,
+.font-\[\'ZT_Nature\'\]\.font-bold,
+.font-\[ZT_Nature\]\.font-black,
+.font-\[\'ZT_Nature\'\]\.font-black,
+.font-zt-nature\.font-bold,
+.font-zt-nature\.font-black,
+[class*="ZT_Nature"].font-bold,
+[class*="ZT Nature"].font-bold,
+[class*="ZT_Nature"].font-semibold,
+[class*="ZT Nature"].font-semibold,
+[class*="ZT_Nature"].font-black,
+[class*="ZT Nature"].font-black,
+[class*="ZT_Nature"].font-extrabold,
+[class*="ZT Nature"].font-extrabold,
+.font-zt-nature.font-bold,
+.font-zt-nature.font-semibold,
+.font-zt-nature.font-black,
+.font-zt-nature.font-extrabold {
+  font-weight: 500 !important;
+}
+
+/* Exception: Only allow different weights for non-ZT-Nature fonts */
+.font-airlash,
+.font-\[Airlash_Raiders\],
+.font-\[\'Airlash_Raiders\'\] {
+  font-family: 'Airlash Raiders', sans-serif;
+  font-weight: 400 !important;
+}
+
+.font-press-start,
+.font-\[Press_Start_2P\],
+.font-\[\'Press_Start_2P\'\] {
+  font-family: 'Press Start 2P', monospace;
+  font-weight: 400 !important;
+}

@@ -1,0 +1,51 @@
+﻿# Logslogs*.lognpm-debug.log*yarn-debug.log*yarn-error.log*pnpm-debug.log*lerna-debug.log*node_modulesdistdist-ssr*.local# Editor directories and files.vscode/*!.vscode/extensions.json.idea.DS_Store*.suo*.ntvs**.njsproj*.sln*.sw?
+# Node.js modules
+/node_modules/
+
+# Build output
+/dist/
+
+# Local environment files
+.env
+.env.* 
+
+# Vite cache
+/.vite/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Jest coverage reports
+/coverage/
+
+# React Native specific
+.expo/
+
+# Dependency directories
+pnpm-lock.yaml
+package-lock.json
+
+# Optional - cache files
+.cache/
+
+# Optional - build artifact directories
+/public/
+
+# Optional - if you use prettier, eslint, or other tools
+.prettierignore
+.eslintcache
+
+# Temporary files
+*.swp
+*.swo
