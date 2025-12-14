@@ -20,7 +20,7 @@ function Login() {
           <div className="w-12 h-12 relative">
             <div 
               className="w-full h-full bg-cover bg-center bg-no-repeat"
-              style={{backgroundImage: 'url(/img/getStartedImg/icon.png)'}}
+              style={{backgroundImage: 'url(/img/getStartedImg/logo-eximple.png)'}}
             ></div>
           </div>
           <span className="font-['Airlash_Raiders'] text-3xl font-normal bg-gradient-to-b from-[#1fb622] to-[#168318] bg-clip-text text-transparent">
@@ -69,10 +69,11 @@ function Login() {
               onClick={togglePassword}
               className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 cursor-pointer z-10"
             >
-              <div 
-                className="w-full h-full bg-cover bg-center bg-no-repeat"
-                style={{backgroundImage: 'url(/img/getStartedImg/eyes.svg)'}}
-              ></div>
+              <img 
+                src="/img/getStartedImg/eye.svg"
+                alt="Toggle password visibility"
+                className="w-full h-full object-contain"
+              />
             </button>
           </div>
 

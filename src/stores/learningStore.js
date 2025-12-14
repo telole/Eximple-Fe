@@ -5,6 +5,8 @@ const useLearningStore = create((set, get) => ({
   subjects: [],
   subjectLevels: [],
   levels: [],
+  currentLevel: null,
+  currentLevelMaterials: [],
   isLoading: false,
   error: null,
 
@@ -56,6 +58,34 @@ const useLearningStore = create((set, get) => ({
     } catch (error) {
       set({ isLoading: false, error: error.message || 'Failed to load levels' });
       return { success: false, error: error.message || 'Failed to load levels' };
+    }
+  },
+
+  getLevel: async (levelId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await learningAPI.getLevel(levelId);
+      if (response.success) {
+        const levelData = response.data;
+        // Sort materials by order_index
+        const sortedMaterials = (levelData.materials || []).sort((a, b) => 
+          (a.order_index || 0) - (b.order_index || 0)
+        );
+        
+        set({ 
+          currentLevel: levelData,
+          currentLevelMaterials: sortedMaterials,
+          isLoading: false, 
+          error: null 
+        });
+        return { success: true, data: levelData };
+      } else {
+        set({ isLoading: false, error: response.error || 'Failed to load level' });
+        return { success: false, error: response.error || 'Failed to load level' };
+      }
+    } catch (error) {
+      set({ isLoading: false, error: error.message || 'Failed to load level' });
+      return { success: false, error: error.message || 'Failed to load level' };
     }
   },
 }));

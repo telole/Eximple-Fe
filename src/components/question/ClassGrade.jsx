@@ -1,11 +1,45 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useProfileCompletionStore from '../../stores/profileCompletionStore';
 
 function ClassGrade() {
   const navigate = useNavigate();
-  const { grade_level_id, full_name, gender, setGradeLevelId, setFullName, setGender } = useProfileCompletionStore();
+  const { grade_level_id, full_name, gender, class_id, setGradeLevelId, setFullName, setGender } = useProfileCompletionStore();
   const [error, setError] = useState(null);
+
+  // Redirect to class-now if no class_id is selected
+  useEffect(() => {
+    if (!class_id) {
+      navigate('/class-now');
+    }
+  }, [class_id, navigate]);
+
+  if (!class_id) {
+    return null;
+  }
+
+  // Get grades based on class_id
+  const getGrades = () => {
+    if (class_id === 1) { // SD (Elementary)
+      return [1, 2, 3, 4, 5, 6];
+    } else if (class_id === 2) { // SMP (Middle)
+      return [1, 2, 3];
+    } else if (class_id === 3) { // SMA (High)
+      return [1, 2, 3];
+    }
+    return [];
+  };
+
+  // Get class label
+  const getClassLabel = () => {
+    if (class_id === 1) return 'SD';
+    if (class_id === 2) return 'SMP';
+    if (class_id === 3) return 'SMA';
+    return '';
+  };
+
+  const grades = getGrades();
+  const classLabel = getClassLabel();
 
   const selectGrade = (grade) => {
     setGradeLevelId(grade);
@@ -25,14 +59,12 @@ function ClassGrade() {
       setError('Please select your grade');
       return;
     }
-    navigate('/class-now');
+    navigate('/choose-subject');
   };
 
   const handleGoBack = () => {
-    navigate('/otp');
+    navigate('/class-now');
   };
-
-  const grades = [1, 2, 3, 4, 5, 6];
 
   return (
     <div className="w-screen h-screen bg-gradient-to-r from-[#020c02] to-[#041d05] relative overflow-hidden flex flex-col">
@@ -112,13 +144,14 @@ function ClassGrade() {
                 <button
                   key={grade}
                   onClick={() => selectGrade(grade)}
-                  className={`w-24 h-20 rounded-[32px] border-2 flex justify-center items-center transition-all ${
+                  className={`w-24 h-20 rounded-[32px] border-2 flex flex-col justify-center items-center transition-all ${
                     grade_level_id === grade
                       ? 'border-[#1fb622] border-4 bg-[rgba(31,182,34,0.15)]'
                       : 'border-[#aaaaaa] bg-[rgba(170,170,170,0.05)] hover:border-[#1fb622] hover:bg-[rgba(31,182,34,0.1)]'
                   }`}
                 >
                   <span className="font-['ZT_Nature'] text-2xl font-medium text-[#eeeeee]">{grade}</span>
+                  <span className="font-['ZT_Nature'] text-sm font-medium text-[#aaaaaa]">{classLabel}</span>
                 </button>
               ))}
             </div>

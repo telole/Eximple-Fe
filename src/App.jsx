@@ -21,8 +21,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/otp" element={<OTP />} />
         <Route path="/choose-subject" element={<ChooseSubject />} />
-        <Route path="/class-grade" element={<ClassGrade />} />
         <Route path="/class-now" element={<ClassNow />} />
+        <Route path="/class-grade" element={<ClassGrade />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/journey" element={<MainJourney />} />
         <Route path="/level/:levelId" element={<Level />} />

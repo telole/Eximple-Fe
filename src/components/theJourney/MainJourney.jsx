@@ -1,10 +1,12 @@
 ﻿import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useMainJourney } from '../../hooks/useMainJourney';
 import Navbar from '../common/Navbar';
 import LevelInfoPanel from '../common/LevelInfoPanel';
 import Footer from '../common/Footer';
 
 function MainJourney() {
+  const location = useLocation();
   const {
     profile,
     levels,
@@ -14,65 +16,139 @@ function MainJourney() {
     stats,
     isLoading,
     error,
+    refreshJourneyMap,
+    selectedSubjectLevel,
   } = useMainJourney();
 
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [selectedLevelIndex, setSelectedLevelIndex] = useState(null);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
+  // Create stable primitive values for dependencies
+  const hasProfile = !!profile;
+  const levelsLength = levels?.length || 0;
+  const hasJourneyMap = !!journeyMap;
+  const hasStats = !!stats;
+  const hasError = !!error;
+
+  // Refresh journey map when returning from level page
   useEffect(() => {
-    const hasAllData = !isLoading && profile && levels && levels.length > 0 && journeyMap && stats;
+    if (location.pathname === '/journey' && refreshJourneyMap && selectedSubjectLevel) {
+      // Small delay to ensure we're back on the journey page
+      const timer = setTimeout(() => {
+        refreshJourneyMap();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname, refreshJourneyMap, selectedSubjectLevel]);
+
+  useEffect(() => {
+    const hasAllData = !isLoading && hasProfile && levelsLength > 0 && hasJourneyMap && hasStats;
     
     if (hasAllData) {
       const timer = setTimeout(() => {
         setIsInitialLoading(false);
       }, 300);
       return () => clearTimeout(timer);
-    } else if (error && !isLoading) {
+    } else if (hasError && !isLoading) {
       const timer = setTimeout(() => {
         setIsInitialLoading(false);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [isLoading, profile, levels, journeyMap, stats, error]);
+    // Add timeout fallback to prevent infinite loading
+    const fallbackTimer = setTimeout(() => {
+      if (isInitialLoading) {
+        setIsInitialLoading(false);
+      }
+    }, 10000); // 10 second timeout
+    return () => clearTimeout(fallbackTimer);
+  }, [isLoading, hasProfile, levelsLength, hasJourneyMap, hasStats, hasError, isInitialLoading]);
 
   const getLevelStatus = (levelId, index) => {
-    if (!journeyMap?.levels || journeyMap.levels.length === 0) {
+    // Normalize journey map structure - support both array and object with levels property
+    const journeyLevels = Array.isArray(journeyMap) 
+      ? journeyMap 
+      : (journeyMap?.levels || []);
+
+    // If no journey map data, only first level is unlocked
+    if (!journeyLevels || journeyLevels.length === 0) {
       return index === 0 ? 'current' : 'locked';
     }
     
-    const levelProgress = journeyMap.levels.find(l => l.id === levelId);
+    // Find this level's progress in journey map
+    // Support both 'id' and 'level_id' fields from backend
+    const levelProgress = journeyLevels.find(l => 
+      (l.id === levelId || l.level_id === levelId)
+    );
     
-    if (levelProgress) {
+    // If backend provides is_unlocked field, use it (new backend implementation)
+    if (levelProgress && Object.prototype.hasOwnProperty.call(levelProgress, 'is_unlocked')) {
+      if (!levelProgress.is_unlocked) {
+        return 'locked';
+      }
+      // If unlocked, check status
       if (levelProgress.status === 'completed') return 'completed';
       if (levelProgress.status === 'in_progress') return 'current';
-      return 'locked';
+      if (levelProgress.journey_status === 'current') return 'current';
+      return 'current'; // Default to current if unlocked
     }
     
-    const completedLevels = journeyMap.levels.filter(l => l.status === 'completed');
-    const inProgressLevel = journeyMap.levels.find(l => l.status === 'in_progress');
+    if (levelProgress) {
+      if (levelProgress.status === 'completed') {
+        return 'completed';
+      }
+      if (levelProgress.status === 'in_progress') {
+        return 'current';
+      }
+      if (levelProgress.journey_status === 'completed') return 'completed';
+      if (levelProgress.journey_status === 'in_progress') return 'current';
+      if (levelProgress.journey_status === 'current') return 'current';
+    }
+    
+    const completedLevels = journeyLevels.filter(l => 
+      l.status === 'completed' || l.journey_status === 'completed'
+    );
+    const inProgressLevel = journeyLevels.find(l => 
+      l.status === 'in_progress' || l.journey_status === 'in_progress'
+    );
     const completedCount = completedLevels.length;
     
     if (inProgressLevel) {
-      const inProgressLevelData = levels.find(l => l.id === inProgressLevel.id);
+      const inProgressLevelId = inProgressLevel.id || inProgressLevel.level_id;
+      const inProgressLevelData = levels.find(l => l.id === inProgressLevelId);
       const inProgressArrayIndex = inProgressLevelData ? levels.findIndex(l => l.id === inProgressLevelData.id) : -1;
       
-      if (inProgressArrayIndex >= 0 && index < inProgressArrayIndex) return 'completed';
-      if (inProgressArrayIndex >= 0 && index === inProgressArrayIndex) return 'current';
+      if (inProgressArrayIndex >= 0) {
+        if (index < inProgressArrayIndex) return 'completed';
+        // The in_progress level itself is current
+        if (index === inProgressArrayIndex) return 'current';
+        if (index === inProgressArrayIndex + 1) return 'current';
+      }
       return 'locked';
     }
     
+    // If there are completed levels but no in_progress, unlock next level
     if (completedCount > 0) {
-      const lastCompletedLevel = completedLevels[completedLevels.length - 1];
-      const lastCompletedLevelData = levels.find(l => l.id === lastCompletedLevel.id);
-      const lastCompletedArrayIndex = lastCompletedLevelData ? levels.findIndex(l => l.id === lastCompletedLevelData.id) : -1;
+      let maxCompletedIndex = -1;
+      completedLevels.forEach(completedLevel => {
+        const completedLevelId = completedLevel.id || completedLevel.level_id;
+        const completedLevelData = levels.find(l => l.id === completedLevelId);
+        if (completedLevelData) {
+          const completedIndex = levels.findIndex(l => l.id === completedLevelData.id);
+          if (completedIndex > maxCompletedIndex) {
+            maxCompletedIndex = completedIndex;
+          }
+        }
+      });
       
-      if (lastCompletedArrayIndex >= 0) {
-        if (index <= lastCompletedArrayIndex) return 'completed';
-        if (index === lastCompletedArrayIndex + 1) return 'current';
+      if (maxCompletedIndex >= 0) {
+        if (index <= maxCompletedIndex) return 'completed';
+        if (index === maxCompletedIndex + 1) {
+          return 'current';
+        }
       }
     }
-    
     if (completedCount === 0 && !inProgressLevel) {
       return index === 0 ? 'current' : 'locked';
     }
@@ -80,13 +156,48 @@ function MainJourney() {
     return 'locked';
   };
 
-  const completedCount = journeyMap?.levels?.filter(l => l.status === 'completed').length || 0;
+  const journeyLevels = Array.isArray(journeyMap) 
+    ? journeyMap 
+    : (journeyMap?.levels || []);
+  const completedCount = journeyLevels.filter(l => l.status === 'completed').length || 0;
   const totalCount = levels.length || 10;
+
+  const getPathStatus = (fromIndex, toIndex) => {
+    if (fromIndex < 0 || toIndex >= levels.length) return false;
+    
+    const fromStatus = getLevelStatus(levels[fromIndex].id, fromIndex);
+    const toStatus = getLevelStatus(levels[toIndex].id, toIndex);
+    
+    // Path is green only if:
+    // 1. From level is completed or current (accessible)
+    // 2. AND To level is NOT locked (must be current or completed)
+    // This ensures we don't show green path to locked levels
+    const fromIsAccessible = fromStatus === 'completed' || fromStatus === 'current';
+    const toIsUnlocked = toStatus === 'current' || toStatus === 'completed';
+    
+    return fromIsAccessible && toIsUnlocked;
+  };
+  const getLongPathStatus = () => {
+    // Check if path 3 (connecting level 3+) should be green
+    // Path is green only if level 3 is unlocked (not locked)
+    if (levels.length < 3) return false;
+    
+    const level3Status = getLevelStatus(levels[2]?.id, 2);
+    const level2Status = getLevelStatus(levels[1]?.id, 1);
+    
+    // Path 3 is green if:
+    // 1. Level 2 is completed or current (accessible)
+    // 2. AND Level 3 is NOT locked (must be current or completed)
+    const level2IsAccessible = level2Status === 'completed' || level2Status === 'current';
+    const level3IsUnlocked = level3Status === 'current' || level3Status === 'completed';
+    
+    return level2IsAccessible && level3IsUnlocked;
+  };
   const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
   
   const level10Index = 9;
   const level10 = levels[level10Index];
-  const level10Progress = level10 ? journeyMap?.levels?.find(l => l.id === level10.id) : null;
+  const level10Progress = level10 ? journeyLevels.find(l => (l.id === level10.id || l.level_id === level10.id)) : null;
   const isLevel10Reached = level10Progress && (level10Progress.status === 'completed' || level10Progress.status === 'in_progress');
   
   const isAllLevelsCompleted = completedCount >= 10;
@@ -282,7 +393,7 @@ function MainJourney() {
               })()}
             </h3>
             <button className="w-10 h-10 p-2 bg-white/10 rounded-2xl hover:bg-white/15 transition-colors">
-              <div className="w-4 h-4 bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/B2B1dApYXi.png)'}}></div>
+              <img src="/img/codia/icon-settings.svg" alt="Settings icon" className="w-4 h-4" />
             </button>
           </div>
           <h2 className="font-['ZT_Nature'] text-4xl font-medium text-[#ee2724] mb-4">
@@ -308,7 +419,7 @@ function MainJourney() {
           )}
 
           {!selectedLevel && (() => {
-            const currentLevel = journeyMap?.levels?.find(l => l.status === 'in_progress');
+            const currentLevel = journeyLevels.find(l => l.status === 'in_progress' || l.journey_status === 'in_progress');
             const currentLevelData = currentLevel ? levels.find(l => l.id === currentLevel.id) : null;
             
             if (!currentLevel || !currentLevelData) return null;
@@ -326,7 +437,7 @@ function MainJourney() {
                     Status: <span className="bg-gradient-to-b from-[#ffb514] to-[#f4ee17] bg-clip-text text-transparent">Ongoing</span>
                   </p>
                 </div>
-                <div className="absolute top-[52px] left-[190px] w-6 h-6 bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/zshJpu4ufR.png)'}}></div>
+                <img src="/img/codia/icon-ongoing.svg" alt="Ongoing icon" className="absolute top-[52px] left-[190px] w-6 h-6" />
                 <button 
                   onClick={() => handleStartLevel(currentLevel.id)}
                   className="absolute bottom-6 left-6 right-6 h-14 bg-gradient-to-b from-[#ee2724] to-[#f15a45] rounded-3xl shadow-[0_-2px_4px_0_rgba(255,255,255,0.5)_inset] hover:opacity-90 transition-opacity"
@@ -381,31 +492,46 @@ function MainJourney() {
               e.stopPropagation();
             }}
           >
-            {/* Path Images - All lanes are black by default */}
-            <div 
-              className="absolute top-[2.86px] left-[146.111px] w-[191.251px] h-[270.431px] bg-cover bg-center bg-no-repeat z-0" 
-              style={{
-                backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/ZWjjtKROUC.png)',
-                filter: 'brightness(0)',
-                opacity: 0.3
-              }}
-            ></div>
-            <div 
-              className="absolute top-[207.045px] left-[2.633px] w-[191.955px] h-[157.955px] bg-cover bg-center bg-no-repeat z-0" 
-              style={{
-                backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/ZtqV3nFdXn.png)',
-                filter: 'brightness(0)',
-                opacity: 0.3
-              }}
-            ></div>
-            <div 
-              className="absolute top-[339.5px] left-[26.86px] w-[286.503px] h-[551.625px] bg-cover bg-center bg-no-repeat z-0" 
-              style={{
-                backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/NHWdPKgKPi.png)',
-                filter: 'brightness(0)',
-                opacity: 0.3
-              }}
-            ></div>
+            {/* Path Images - Change to green when levels are unlocked */}
+            {/* Path 1: Level 1 to Level 2 */}
+            <div className="absolute top-[2.86px] left-[146.111px] w-[191.251px] h-[270.431px] z-0">
+              <div 
+                className="w-full h-full bg-cover bg-center bg-no-repeat transition-all duration-500" 
+                style={{
+                  backgroundImage: 'url(/img/codia/path-level1-to-level2.svg)',
+                  filter: getPathStatus(0, 1) 
+                    ? 'brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%)' // Green filter
+                    : 'brightness(0)',
+                  opacity: getPathStatus(0, 1) ? 0.7 : 0.3
+                }}
+              ></div>
+            </div>
+            {/* Path 2: Level 2 to Level 3 */}
+            <div className="absolute top-[207.045px] left-[2.633px] w-[191.955px] h-[157.955px] z-0">
+              <div 
+                className="w-full h-full bg-cover bg-center bg-no-repeat transition-all duration-500" 
+                style={{
+                  backgroundImage: 'url(/img/codia/path-level2-to-level3.svg)',
+                  filter: getPathStatus(1, 2) 
+                    ? 'brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%)' // Green filter
+                    : 'brightness(0)',
+                  opacity: getPathStatus(1, 2) ? 0.7 : 0.3
+                }}
+              ></div>
+            </div>
+            {/* Path 3: Level 3 to Level 4+ (long path) */}
+            <div className="absolute top-[339.5px] left-[26.86px] w-[286.503px] h-[551.625px] z-0">
+              <div 
+                className="w-full h-full bg-cover bg-center bg-no-repeat transition-all duration-500" 
+                style={{
+                  backgroundImage: 'url(/img/codia/path-level3-plus.svg)',
+                  filter: getLongPathStatus() 
+                    ? 'brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%)' // Green filter
+                    : 'brightness(0)',
+                  opacity: getLongPathStatus() ? 0.7 : 0.3
+                }}
+              ></div>
+            </div>
 
             {levels?.map((level, index) => {
               const status = getLevelStatus(level.id, index);

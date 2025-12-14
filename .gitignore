@@ -40,7 +40,6 @@ package-lock.json
 .cache/
 
 # Optional - build artifact directories
-/public/
 
 # Optional - if you use prettier, eslint, or other tools
 .prettierignore

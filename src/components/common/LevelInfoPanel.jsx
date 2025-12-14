@@ -9,17 +9,17 @@ function LevelInfoPanel({ level, status, onStart, onClose }) {
     completed: {
       bg: 'bg-[#1fb622]/20',
       text: 'text-[#1fb622]',
-      label: 'Γ£ô Completed'
+      label: '✅ Completed'
     },
     current: {
       bg: 'bg-[#ffb514]/20',
       text: 'text-[#ffb514]',
-      label: 'ΓùÅ Current'
+      label: '⏳ Current'
     },
     locked: {
       bg: 'bg-white/10',
       text: 'text-white/60',
-      label: '≡ƒöÆ Locked'
+      label: '🔒 Locked'
     }
   };
 
@@ -45,7 +45,7 @@ function LevelInfoPanel({ level, status, onStart, onClose }) {
           onClick={onClose}
           className="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full hover:bg-white/20 transition-colors flex-shrink-0"
         >
-          <span className="text-white text-2xl">├ù</span>
+          <span className="text-white text-2xl">×</span>
         </button>
       </div>
 
@@ -72,7 +72,7 @@ function LevelInfoPanel({ level, status, onStart, onClose }) {
             <div className="flex justify-between items-center">
               <span className="font-['ZT_Nature'] text-lg text-white/80">Reward:</span>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/X2tuHmK19p.png)'}}></div>
+                <img src="/img/codia/icon-leaf.svg" alt="Leaf icon" className="w-6 h-6" />
                 <span className="font-['ZT_Nature'] text-xl font-medium text-[#1fb622]">{rewardText}</span>
               </div>
             </div>

@@ -17,14 +17,18 @@ const useProfileStore = create(
           const response = await profileAPI.getProfile();
           if (response.success) {
             const profileData = response.data?.profile || response.data;
+            // Extract points and streak from response.data (not profileData)
+            // Structure: { data: { points: {...}, streak: {...}, ... } }
+            const pointsData = response.data?.points || profileData?.points || 0;
+            const streakData = response.data?.streak || profileData?.streak || 0;
             set({ 
               profile: profileData, 
-              points: profileData?.points || 0,
-              streak: profileData?.streak || 0,
+              points: pointsData,
+              streak: streakData,
               isLoading: false, 
               error: null 
             });
-            return { success: true, data: { profile: profileData } };
+            return { success: true, data: response.data };
           } else {
             set({ isLoading: false, error: response.error || 'Failed to load profile' });
             return { success: false, error: response.error || 'Failed to load profile' };
@@ -41,10 +45,13 @@ const useProfileStore = create(
           const response = await profileAPI.completeProfile(profileData);
           if (response.success) {
             const profile = response.data?.profile || response.data;
+            // Extract points and streak from response.data
+            const pointsData = response.data?.points || profile?.points || 0;
+            const streakData = response.data?.streak || profile?.streak || 0;
             set({ 
               profile, 
-              points: profile?.points || 0,
-              streak: profile?.streak || 0,
+              points: pointsData,
+              streak: streakData,
               isLoading: false, 
               error: null 
             });

@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useProfileStore from '../../stores/profileStore';
 import useAuthStore from '../../stores/authStore';
 import useProgressStore from '../../stores/progressStore';
 import Navbar from '../common/Navbar';
 
 export default function Profile() {
+  const navigate = useNavigate();
   const { profile, isLoading, error, getProfile, updateProfile, updateAvatar, uploadAvatar, points, streak } = useProfileStore();
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const { stats, getStats } = useProgressStore();
   
   const [formData, setFormData] = useState({
@@ -106,8 +108,7 @@ export default function Profile() {
       }
       
       e.target.value = '';
-    } catch (error) {
-      console.error('Avatar upload error:', error);
+    } catch {
       setAvatarPreview(null);
     }
   };
@@ -122,6 +123,11 @@ export default function Profile() {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   if (isLoading && !profile) {
     return (
       <div className="w-screen h-screen bg-gradient-to-r from-[#020c02] to-[#041d05] flex items-center justify-center">
@@ -134,8 +140,8 @@ export default function Profile() {
     <div className="w-screen min-h-screen bg-gradient-to-r from-[#020c02] to-[#041d05] relative overflow-x-hidden overflow-y-auto">
       <Navbar stats={stats} activePage="profile" />
 
-      <div className="flex flex-col items-center px-8 md:px-16 lg:px-20 py-8">
-        <div className="w-full max-w-[896px] rounded-[16px] border border-[#aaaaaa] bg-[rgba(170,170,170,0.05)] p-8 relative">
+      <div className="flex flex-col items-center px-4 sm:px-6 md:px-8 lg:px-16 xl:px-20 py-6 sm:py-8">
+        <div className="w-full max-w-[896px] rounded-xl sm:rounded-2xl md:rounded-[16px] border border-[#aaaaaa] bg-[rgba(170,170,170,0.05)] p-4 sm:p-6 md:p-8 relative">
           <div className="flex flex-col items-center mb-8">
             <div className="relative mb-4">
               <div className="w-[80px] h-[80px] bg-[rgba(238,238,238,0.1)] rounded-full flex items-center justify-center overflow-hidden relative">
@@ -157,9 +163,11 @@ export default function Profile() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-[32px] h-[32px] bg-cover bg-center bg-no-repeat"
-                    style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-12/U0jqWukkRS.png)'}}
-                  ></div>
+                  <img 
+                    src="/img/codia/profile-avatar-default.svg"
+                    alt="Profile avatar"
+                    className="w-[32px] h-[32px]"
+                  />
                 )}
               </div>
               <label 
@@ -209,7 +217,7 @@ export default function Profile() {
                 {points && (
                   <div className="p-4 bg-[rgba(31,182,34,0.1)] rounded-[12px] border border-[#1fb622]/30">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="w-6 h-6 bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/o5MNk0rnUL.png)'}}></div>
+                      <img src="/img/codia/icon-leaf.svg" alt="Fire icon" className="w-6 h-6" />
                       <span className="font-['ZT_Nature'] text-base font-medium text-white">Points</span>
                     </div>
                     <div className="space-y-1">
@@ -239,7 +247,7 @@ export default function Profile() {
                 {streak && (
                   <div className="p-4 bg-[rgba(244,123,32,0.1)] rounded-[12px] border border-[#f47b20]/30">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xl">≡ƒöÑ</span>
+                      <img src="/img/codia/icon-fire.svg" alt="Fire icon" className="w-6 h-6" />
                       <span className="font-['ZT_Nature'] text-base font-medium text-white">Streak</span>
                     </div>
                     <div className="space-y-1">
@@ -329,7 +337,7 @@ export default function Profile() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[#aaaaaa] hover:text-white transition-colors"
                   >
-                    {showPassword ? '≡ƒæü∩╕Å' : '≡ƒæü∩╕ÅΓÇì≡ƒù¿∩╕Å'}
+                    {showPassword ? 'Hide' : 'Show'}
                   </button>
                 </div>
               </div>
@@ -341,36 +349,52 @@ export default function Profile() {
                 <label className="block font-['ZT_Nature'] text-base font-medium text-white mb-2">
                   Gender
                 </label>
-                <select
-                  value={formData.gender}
-                  onChange={(e) => handleInputChange('gender', e.target.value)}
-                  className="w-full h-[40px] rounded-[12px] border border-[#aaaaaa] bg-[rgba(170,170,170,0.05)] px-4 font-['ZT_Nature'] text-base text-white focus:outline-none focus:border-[#1fb622] transition-colors"
-                >
-                  <option value="">Select gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                </select>
+                <div className="relative">
+                  <select
+                    value={formData.gender}
+                    onChange={(e) => handleInputChange('gender', e.target.value)}
+                    className="w-full h-[40px] rounded-[12px] border border-[#aaaaaa] bg-[rgba(170,170,170,0.05)] px-4 pr-10 font-['ZT_Nature'] text-base text-white appearance-none cursor-pointer focus:outline-none focus:border-[#1fb622] transition-colors hover:border-[#1fb622]/50"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4L6 8L10 4' stroke='%231fb622' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'right 12px center',
+                      paddingRight: '40px'
+                    }}
+                  >
+                    <option value="" className="bg-[#041d05] text-white">Select gender</option>
+                    <option value="male" className="bg-[#041d05] text-white">Male</option>
+                    <option value="female" className="bg-[#041d05] text-white">Female</option>
+                  </select>
+                </div>
               </div>
               <div className="flex-1">
                 <label className="block font-['ZT_Nature'] text-base font-medium text-white mb-2">
                   School Level
                 </label>
-                <select
-                  value={formData.class_id || ''}
-                  onChange={(e) => {
-                    const classId = e.target.value ? parseInt(e.target.value) : null;
-                    handleInputChange('class_id', classId);
-                    if (classId !== formData.class_id) {
-                      handleInputChange('grade_level_id', null);
-                    }
-                  }}
-                  className="w-full h-[40px] rounded-[12px] border border-[#aaaaaa] bg-[rgba(170,170,170,0.05)] px-4 font-['ZT_Nature'] text-base text-white focus:outline-none focus:border-[#1fb622] transition-colors"
-                >
-                  <option value="">Select school level</option>
-                  <option value="1">Elementary School (SD)</option>
-                  <option value="2">Middle School (SMP)</option>
-                  <option value="3">High School (SMA)</option>
-                </select>
+                <div className="relative">
+                  <select
+                    value={formData.class_id || ''}
+                    onChange={(e) => {
+                      const classId = e.target.value ? parseInt(e.target.value) : null;
+                      handleInputChange('class_id', classId);
+                      if (classId !== formData.class_id) {
+                        handleInputChange('grade_level_id', null);
+                      }
+                    }}
+                    className="w-full h-[40px] rounded-[12px] border border-[#aaaaaa] bg-[rgba(170,170,170,0.05)] px-4 pr-10 font-['ZT_Nature'] text-base text-white appearance-none cursor-pointer focus:outline-none focus:border-[#1fb622] transition-colors hover:border-[#1fb622]/50"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 4L6 8L10 4' stroke='%231fb622' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'right 12px center',
+                      paddingRight: '40px'
+                    }}
+                  >
+                    <option value="" className="bg-[#041d05] text-white">Select school level</option>
+                    <option value="1" className="bg-[#041d05] text-white">Elementary School (SD)</option>
+                    <option value="2" className="bg-[#041d05] text-white">Middle School (SMP)</option>
+                    <option value="3" className="bg-[#041d05] text-white">High School (SMA)</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -433,12 +457,21 @@ export default function Profile() {
               </div>
             )}
 
-            {/* Save Button */}
-            <div className="flex justify-end">
+            {/* Save Button and Logout */}
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mt-6 pt-6 border-t border-[#aaaaaa]/30">
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="px-6 sm:px-8 py-3 sm:py-4 bg-transparent border-2 border-red-500/50 hover:border-red-500 hover:bg-red-500/10 rounded-[24px] transition-all"
+              >
+                <span className="font-['ZT_Nature'] text-base font-medium text-red-400">
+                  Logout
+                </span>
+              </button>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="px-8 py-4 bg-gradient-to-b from-[#ee2724] to-[#f15a45] rounded-[24px] shadow-[0_-2px_4px_0_rgba(255,255,255,0.5)_inset] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-b from-[#ee2724] to-[#f15a45] rounded-[24px] shadow-[0_-2px_4px_0_rgba(255,255,255,0.5)_inset] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="font-['ZT_Nature'] text-base font-medium text-[#eeeeee]">
                   {isLoading ? 'Saving...' : 'Save Changes'}

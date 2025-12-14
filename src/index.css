@@ -15,10 +15,50 @@
   font-weight: 500;
 }
 
-/* Ensure ZT Nature Medium is used by default */
+/* Ensure ZT Nature Medium is used by default - Apply to ALL elements */
+* {
+  font-family: 'ZT Nature', sans-serif;
+  font-weight: 500;
+}
+
+/* Custom Select/Dropdown Styling for Dark Theme */
+select {
+  color: white;
+}
+
+select option {
+  background-color: #041d05;
+  color: white;
+  padding: 8px;
+}
+
+select:focus option:checked {
+  background-color: #1fb622;
+  color: white;
+}
+
 body {
   font-family: 'ZT Nature', sans-serif;
   font-weight: 500;
+}
+
+/* Exception: Only override for specific font classes */
+.font-airlash,
+.font-\[Airlash_Raiders\],
+.font-\[\'Airlash_Raiders\'],
+[class*="Airlash_Raiders"],
+[class*="Airlash Raiders"] {
+  font-family: 'Airlash Raiders', sans-serif !important;
+  font-weight: 400 !important;
+}
+
+.font-press-start,
+.font-\[Press_Start_2P\],
+.font-\[\'Press_Start_2P\'],
+[class*="Press_Start_2P"],
+[class*="Press Start 2P"] {
+  font-family: 'Press Start 2P', monospace !important;
+  font-weight: 400 !important;
 }
 
 /* ============================================
@@ -72,17 +112,3 @@ h1.font-zt-nature, h2.font-zt-nature, h3.font-zt-nature, h4.font-zt-nature, h5.f
   font-weight: 500 !important;
 }
 
-/* Exception: Only allow different weights for non-ZT-Nature fonts */
-.font-airlash,
-.font-\[Airlash_Raiders\],
-.font-\[\'Airlash_Raiders\'\] {
-  font-family: 'Airlash Raiders', sans-serif;
-  font-weight: 400 !important;
-}
-
-.font-press-start,
-.font-\[Press_Start_2P\],
-.font-\[\'Press_Start_2P\'\] {
-  font-family: 'Press Start 2P', monospace;
-  font-weight: 400 !important;
-}

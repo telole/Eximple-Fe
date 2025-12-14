@@ -3,6 +3,7 @@ import useAiChatStore from '../../stores/aiChatStore';
 import useProgressStore from '../../stores/progressStore';
 import useAuthStore from '../../stores/authStore';
 import Navbar from '../common/Navbar';
+import { sanitizeText } from '../../utils/textFilter';
 
 export default function AIAgent() {
   const [message, setMessage] = useState('');
@@ -49,7 +50,7 @@ export default function AIAgent() {
           setCurrentSession(session);
           const messagesResult = await getMessages(session.id);
           if (!messagesResult.success) {
-            console.error('Failed to load messages:', messagesResult.error);
+            // Failed to load messages
           }
           await loadSessionPreviews(sessionsResult.data);
         } else if (sessionsResult.success) {
@@ -57,15 +58,14 @@ export default function AIAgent() {
           if (createResult.success && createResult.data) {
             const messagesResult = await getMessages(createResult.data.id);
             if (!messagesResult.success) {
-              console.error('Failed to load messages after creating session:', messagesResult.error);
+              // Failed to load messages after creating session
             }
             await getSessions();
           }
         } else {
           setApiError('Unable to connect to AI service. Please try again later.');
         }
-      } catch (error) {
-        console.error('Error initializing chat:', error);
+      } catch {
         setApiError('Unable to connect to AI service. Please try again later.');
       } finally {
         setIsInitialLoading(false);
@@ -93,13 +93,11 @@ export default function AIAgent() {
     try {
       const result = await sendMessage(currentSession.id, messageText);
       if (!result.success) {
-        console.error('Send message error:', result.error);
         setApiError(result.error || 'Failed to send message');
       } else {
         setApiError(null);
       }
-    } catch (error) {
-      console.error('Send message exception:', error);
+    } catch {
       setApiError('Failed to send message. Please try again.');
     } finally {
       setIsSending(false);
@@ -122,8 +120,7 @@ export default function AIAgent() {
       } else {
         setApiError(result.error || 'Failed to create new chat');
       }
-    } catch (error) {
-      console.error('Create session error:', error);
+    } catch {
       setApiError('Failed to create new chat. Please try again.');
     }
   };
@@ -139,8 +136,8 @@ export default function AIAgent() {
             return { sessionId: session.id, preview };
           }
         }
-      } catch (error) {
-        console.error(`Failed to load preview for session ${session.id}:`, error);
+      } catch {
+        // Failed to load preview for session
       }
       return null;
     });
@@ -165,14 +162,12 @@ export default function AIAgent() {
       setCurrentSession(session);
       const messagesResult = await getMessages(session.id);
       if (!messagesResult.success) {
-        console.error('Failed to load messages:', messagesResult.error);
         setApiError('Failed to load chat history');
       } else {
         setApiError(null);
       }
       setShowHistory(false);
-    } catch (error) {
-      console.error('Error loading session:', error);
+    } catch {
       setApiError('Failed to load chat history');
     }
   };
@@ -210,7 +205,7 @@ export default function AIAgent() {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div 
                   className="w-16 h-16 bg-cover bg-center bg-no-repeat"
-                  style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-12/cFYMW8ngCw.png)'}}
+                  style={{backgroundImage: 'url(/img/codia/ai-agent-avatar.png)'}}
                 ></div>
               </div>
             </div>
@@ -247,6 +242,10 @@ export default function AIAgent() {
             width: 100%;
             transform: translateX(0);
           }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
         }
       `}</style>
 
@@ -298,7 +297,7 @@ export default function AIAgent() {
         className={`fixed left-0 top-0 bottom-0 z-40 bg-[rgba(2,12,2,0.98)] border-r border-[rgba(170,170,170,0.1)] flex flex-col transition-transform duration-300 ease-in-out ${
           showHistory ? 'translate-x-0' : '-translate-x-full'
         }`}
-        style={{ width: '280px' }}
+        style={{ width: '100%', maxWidth: '280px' }}
       >
         <div className="p-4 border-b border-[rgba(170,170,170,0.1)] flex items-center justify-between">
           <button
@@ -374,9 +373,9 @@ export default function AIAgent() {
         ></div>
       )}
 
-      <div className={`flex-1 flex flex-col overflow-hidden px-4 md:px-8 lg:px-16 relative transition-all duration-300 ${
+      <div className={`flex-1 flex flex-col overflow-hidden px-4 sm:px-6 md:px-8 lg:px-16 relative transition-all duration-300 ${
         showHistory ? 'md:ml-[280px]' : ''
-      }`}>
+      }`} style={{ paddingTop: '0' }}>
         <button
           onClick={() => {
             setShowHistory(!showHistory);
@@ -384,10 +383,10 @@ export default function AIAgent() {
               loadSessionPreviews(sessions);
             }
           }}
-          className="absolute top-4 left-4 md:left-8 z-10 w-10 h-10 flex items-center justify-center bg-[rgba(170,170,170,0.1)] rounded-lg hover:bg-[rgba(170,170,170,0.2)] transition-colors border border-[rgba(170,170,170,0.2)]"
+          className="absolute top-4 left-4 sm:left-6 md:left-8 z-10 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-[rgba(170,170,170,0.1)] rounded-lg hover:bg-[rgba(170,170,170,0.2)] transition-colors border border-[rgba(170,170,170,0.2)]"
           title="Chat History"
         >
-          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
@@ -398,13 +397,21 @@ export default function AIAgent() {
                 <div className="text-[#aaaaaa] font-['ZT_Nature'] text-lg">Loading chat...</div>
               </div>
             ) : !hasMessages ? (
-              <div className="flex flex-col items-center justify-center h-full gap-4">
-                <div className="w-[200px] h-[200px] bg-cover bg-center bg-no-repeat" 
-                  // style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-12/cFYMW8ngCw.png)'}}
-                ></div>
-                <p className="font-['ZT_Nature'] text-3xl font-medium text-[rgba(238,238,238,0.5)]">
-                  How can I help you?
-                </p>
+              <div className="flex flex-col md:flex-row items-center justify-center h-full gap-6 md:gap-8 lg:gap-12">
+                {/* Mascot Character - Left Side */}
+                <div className="w-[250px] sm:w-[300px] md:w-[350px] lg:w-[400px] xl:w-[450px] aspect-square relative z-0 animate-[float_3s_ease-in-out_infinite] order-2 md:order-1">
+                  <div 
+                    className="w-full h-full bg-cover bg-center bg-no-repeat"
+                    style={{backgroundImage: 'url(/img/codia/ai-agent-avatar.png)'}}
+                  ></div>
+                </div>
+                
+                {/* Welcome Text - Right Side */}
+                <div className="flex flex-col items-center md:items-start z-10 order-1 md:order-2">
+                  <p className="font-['ZT_Nature'] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium text-[rgba(238,238,238,0.5)] text-center md:text-left">
+                    How can I help you?
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="flex flex-col gap-6 pb-4">
@@ -417,24 +424,24 @@ export default function AIAgent() {
                       className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} gap-4 items-start`}
                     >
                       {msg.sender === 'bot' && (
-                        <div className="w-16 h-16 flex-shrink-0 bg-cover bg-center bg-no-repeat mt-1"
-                          style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-12/cFYMW8ngCw.png)'}}
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 bg-cover bg-center bg-no-repeat mt-1"
+                          style={{backgroundImage: 'url(/img/codia/ai-agent-avatar.png)'}}
                         ></div>
                       )}
                       <div
-                        className={`max-w-[80%] rounded-2xl p-4 ${
+                        className={`max-w-[85%] sm:max-w-[80%] rounded-2xl p-3 sm:p-4 ${
                           msg.sender === 'user'
                             ? 'bg-gradient-to-b from-[#168318] to-[#1fb622] text-white'
                             : 'bg-[rgba(170,170,170,0.1)] text-[#eeeeee] border border-[rgba(170,170,170,0.2)]'
                         }`}
                       >
-                        <p className="font-['ZT_Nature'] text-base leading-relaxed whitespace-pre-wrap">
-                          {msg.message || ''}
+                        <p className="font-['ZT_Nature'] text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
+                          {sanitizeText(msg.message || '')}
                         </p>
                       </div>
                       {msg.sender === 'user' && (
-                        <div className="w-8 h-8 flex-shrink-0 bg-white/10 rounded-full flex items-center justify-center mt-1">
-                          <span className="font-['ZT_Nature'] text-sm text-white">U</span>
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0 bg-white/10 rounded-full flex items-center justify-center mt-1">
+                          <span className="font-['ZT_Nature'] text-xs sm:text-sm text-white">U</span>
                         </div>
                       )}
                     </div>
@@ -443,7 +450,7 @@ export default function AIAgent() {
                 {isSending && (
                   <div className="flex justify-start gap-4 items-start">
                     <div className="w-16 h-16 flex-shrink-0 bg-cover bg-center bg-no-repeat mt-1"
-                      style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-12/cFYMW8ngCw.png)'}}
+                      style={{backgroundImage: 'url(/img/codia/ai-agent-avatar.png)'}}
                     ></div>
                     <div className="bg-[rgba(170,170,170,0.1)] rounded-2xl p-4 border border-[rgba(170,170,170,0.2)]">
                       <div className="flex gap-2">
@@ -462,11 +469,11 @@ export default function AIAgent() {
             
         <div className="w-full max-w-4xl mx-auto pb-6 pt-4">
           <form onSubmit={handleSendMessage} className="relative flex items-end gap-4">
-            <div className="w-16 h-16 flex-shrink-0 bg-cover bg-center bg-no-repeat"
-              style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-12/cFYMW8ngCw.png)'}}
+            <div className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 bg-cover bg-center bg-no-repeat"
+              style={{backgroundImage: ''}}
             ></div>
             <div className="flex-1">
-              <div className="w-full bg-[rgba(170,170,170,0.05)] rounded-[16px] border border-[rgba(170,170,170,0.05)] p-4 flex items-center gap-3 shadow-lg">
+              <div className="w-full bg-[rgba(170,170,170,0.05)] rounded-[16px] border border-[rgba(170,170,170,0.05)] p-3 sm:p-4 flex items-center gap-2 sm:gap-3 shadow-lg">
                 <input
                   ref={inputRef}
                   type="text"
@@ -474,26 +481,22 @@ export default function AIAgent() {
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="What is the formula for the area of a circle?"
                   disabled={isSending || !currentSession}
-                  className="flex-1 bg-transparent border-none outline-none font-['ZT_Nature'] text-[20px] font-medium text-[rgba(238,238,238,0.5)] placeholder:text-[rgba(238,238,238,0.5)]"
+                  className="flex-1 bg-transparent border-none outline-none font-['ZT_Nature'] text-base sm:text-lg md:text-[20px] font-medium text-[rgba(238,238,238,0.5)] placeholder:text-[rgba(238,238,238,0.5)]"
                 />
                 <button
                   type="button"
                   onClick={handleNewChat}
-                  className="w-[38px] h-[38px] flex items-center justify-center rounded-[8px] border border-[rgba(238,238,238,0.5)] hover:bg-white/10 transition-colors flex-shrink-0"
+                  className="w-[32px] h-[32px] sm:w-[38px] sm:h-[38px] flex items-center justify-center rounded-[8px] border border-[rgba(238,238,238,0.5)] hover:bg-white/10 transition-colors flex-shrink-0"
                   title="New Chat"
                 >
-                  <div className="w-[14px] h-[14px] bg-cover bg-no-repeat"
-                    style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-12/N1BbnehhOs.png)'}}
-                  ></div>
+                  <img src="/img/codia/ai-agent-icon-1.svg" alt="New chat" className="w-[12px] h-[12px] sm:w-[14px] sm:h-[14px]" />
                 </button>
                 <button
                   type="submit"
                   disabled={!message.trim() || isSending || !currentSession}
-                  className="w-[36px] h-[38px] flex items-center justify-center bg-[#1fb622] rounded-[8px] hover:bg-[#168318] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                  className="w-[32px] h-[32px] sm:w-[36px] sm:h-[38px] flex items-center justify-center bg-[#1fb622] rounded-[8px] hover:bg-[#168318] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                 >
-                  <div className="w-[14px] h-[16px] bg-cover bg-no-repeat"
-                    style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-12/Q2xxLZ3C6w.png)'}}
-                  ></div>
+                  <img src="/img/codia/ai-agent-icon-2.svg" alt="Send" className="w-[12px] h-[14px] sm:w-[14px] sm:h-[16px]" />
                 </button>
               </div>
               {(error || apiError) && (

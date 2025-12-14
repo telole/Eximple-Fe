@@ -51,7 +51,7 @@ export function useOTP() {
       if (result.data.user.profile_complete) {
         navigate('/journey');
       } else {
-        navigate('/class-grade');
+        navigate('/class-now');
       }
     } else {
       setError(result.error || 'Invalid OTP code');

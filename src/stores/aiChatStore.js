@@ -131,7 +131,6 @@ const useAiChatStore = create((set, get) => ({
           isLoading: false,
         });
         
-        console.log('Updated messages:', updatedMessages);
         return { success: true, data: response.data };
       }
       
@@ -160,8 +159,6 @@ const useAiChatStore = create((set, get) => ({
       
       return { success: false, error: response.error || 'Failed to send message' };
     } catch (error) {
-      console.error('AI Chat Error:', error);
-      
       const currentMessages = get().messages || [];
       const errorExists = currentMessages.some(msg => 
         msg.sender === 'bot' && 

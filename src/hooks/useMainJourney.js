@@ -88,6 +88,13 @@ export function useMainJourney() {
     }
   };
 
+  const refreshJourneyMap = async () => {
+    if (selectedSubjectLevel) {
+      await getJourneyMap(selectedSubjectLevel);
+      await getStats();
+    }
+  };
+
   return {
     profile,
     subjectLevels,
@@ -100,6 +107,7 @@ export function useMainJourney() {
     isLoading: learningLoading || progressLoading,
     handleStartLevel,
     handleSubjectChange,
+    refreshJourneyMap,
   };
 }
 

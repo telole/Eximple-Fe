@@ -4,7 +4,7 @@ import useProfileCompletionStore from '../../stores/profileCompletionStore';
 
 function ClassNow() {
   const navigate = useNavigate();
-  const { class_id, grade_level_id, setClassId } = useProfileCompletionStore();
+  const { class_id, setClassId } = useProfileCompletionStore();
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [error, setError] = useState(null);
 
@@ -15,9 +15,9 @@ function ClassNow() {
   };
 
   const levels = [
-    { id: 'elementary', name: 'Elementary School', image: '/img/getStartedImg/bags.png', classId: levelToClassId.elementary },
-    { id: 'middle', name: 'Middle School', image: '/img/getStartedImg/middlescroll.png', classId: levelToClassId.middle },
-    { id: 'high', name: 'High School', image: '/img/getStartedImg/highscholl.png', classId: levelToClassId.high }
+    { id: 'elementary', name: 'Elementary School', image: '/img/getStartedImg/mascotmodel3.png', classId: levelToClassId.elementary },
+    { id: 'middle', name: 'Middle School', image: '/img/getStartedImg/mascotmodel4.png', classId: levelToClassId.middle },
+    { id: 'high', name: 'High School', image: '/img/getStartedImg/middlescroll.png', classId: levelToClassId.high }
   ];
 
   const selectLevel = (level) => {
@@ -29,21 +29,6 @@ function ClassNow() {
     }
   };
 
-  const validateClassAndGrade = () => {
-    if (!grade_level_id || !class_id) return true;
-    
-    const grade = grade_level_id;
-    const classId = class_id;
-    
-    if (classId === 1) {
-      return grade >= 1 && grade <= 6;
-    } else if (classId === 2) {
-      return grade >= 1 && grade <= 3;
-    } else if (classId === 3) {
-      return grade >= 1 && grade <= 3;
-    }
-    return true;
-  };
 
   const handleContinue = () => {
     if (!class_id) {
@@ -51,16 +36,11 @@ function ClassNow() {
       return;
     }
     
-    if (!validateClassAndGrade()) {
-      setError('Selected grade does not match the school level. Please go back and select the correct grade.');
-      return;
-    }
-    
-    navigate('/choose-subject');
+    navigate('/class-grade');
   };
 
   const handleGoBack = () => {
-    navigate('/class-grade');
+    navigate('/otp');
   };
 
   return (
@@ -71,7 +51,7 @@ function ClassNow() {
           <div className="w-12 h-12 relative">
             <div 
               className="w-full h-full bg-cover bg-center bg-no-repeat"
-              style={{backgroundImage: 'url(/img/getStartedImg/icon.png)'}}
+              style={{backgroundImage: 'url(/img/getStartedImg/bags.png)'}}
             ></div>
           </div>
           <span className="font-['Airlash_Raiders'] text-3xl font-normal bg-gradient-to-b from-[#1fb622] to-[#168318] bg-clip-text text-transparent">
@@ -81,45 +61,45 @@ function ClassNow() {
       </div>
 
       
-      <div className="flex-1 flex items-center justify-center px-4 md:px-8 pb-8 relative">
+      <div className="flex-1 flex items-center justify-center px-4 md:px-8 pb-20 md:pb-8 relative overflow-y-auto">
         
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[300px] md:w-[400px] lg:w-[450px] aspect-square z-0 animate-[floatRealistic_5s_ease-in-out_infinite] hidden md:block pointer-events-none -mt-8 md:-mt-12 lg:-mt-16">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[200px] sm:w-[300px] md:w-[400px] lg:w-[450px] aspect-square z-0 animate-[floatRealistic_5s_ease-in-out_infinite] hidden sm:block pointer-events-none -mt-8 md:-mt-12 lg:-mt-16 opacity-50 sm:opacity-100">
           <div 
             className="w-full h-full bg-cover bg-center bg-no-repeat"
-            style={{backgroundImage: 'url(/img/getStartedImg/mascotmodel4.png)'}}
+            style={{backgroundImage: 'url(/img/getStartedImg/highscholl.png)'}}
           ></div>
         </div>
 
         
-        <div className="flex flex-col items-center gap-6 z-10 relative">
-          <h2 className="font-['Press_Start_2P'] text-sm md:text-base lg:text-lg text-white text-center leading-relaxed">
+        <div className="flex flex-col items-center gap-4 sm:gap-6 z-10 relative w-full max-w-4xl">
+          <h2 className="font-['Press_Start_2P'] text-xs sm:text-sm md:text-base lg:text-lg text-white text-center leading-relaxed px-4">
             What level are you at now?
           </h2>
 
           
           {error && (
             <div className="w-full max-w-md px-4 py-2 bg-red-500/20 border-2 border-red-500 rounded-lg">
-              <p className="font-['ZT_Nature'] text-sm text-red-400 text-center">{error}</p>
+              <p className="font-['ZT_Nature'] text-xs sm:text-sm text-red-400 text-center">{error}</p>
             </div>
           )}
 
           
-          <div className="flex gap-4 md:gap-6 justify-center flex-wrap">
+          <div className="flex gap-3 sm:gap-4 md:gap-6 justify-center flex-wrap px-4 w-full">
             {levels.map((level) => (
               <div
                 key={level.id}
                 onClick={() => selectLevel(level.id)}
-                className={`w-[240px] h-[288px] rounded-[32px] border-2 flex flex-col items-center cursor-pointer transition-all ${
+                className={`w-full max-w-[280px] sm:w-[200px] md:w-[240px] h-auto min-h-[240px] sm:min-h-[288px] sm:h-[288px] rounded-[24px] sm:rounded-[32px] border-2 flex flex-col items-center cursor-pointer transition-all ${
                   selectedLevel === level.id
                     ? 'border-[#1fb622] border-4 bg-[rgba(31,182,34,0.15)]'
                     : 'border-[#aaaaaa] bg-[rgba(170,170,170,0.05)] hover:border-[#1fb622] hover:bg-[rgba(31,182,34,0.1)]'
                 }`}
               >
                 <div 
-                  className={`${level.id === 'elementary' ? 'w-[241px] h-[132px] mt-[42px]' : level.id === 'middle' ? 'w-[232px] h-[121px] mt-[52px]' : 'w-[264px] h-[136px] mt-[41px] -ml-3'} bg-cover bg-center bg-no-repeat`}
+                  className={`${level.id === 'elementary' ? 'w-full max-w-[200px] sm:max-w-[241px] h-[100px] sm:h-[132px] mt-[32px] sm:mt-[42px]' : level.id === 'middle' ? 'w-full max-w-[200px] sm:max-w-[232px] h-[90px] sm:h-[121px] mt-[40px] sm:mt-[52px]' : 'w-full max-w-[220px] sm:max-w-[264px] h-[100px] sm:h-[136px] mt-[32px] sm:mt-[41px]'} bg-cover bg-center bg-no-repeat`}
                   style={{backgroundImage: `url(${level.image})`}}
                 ></div>
-                <span className="font-['ZT_Nature'] text-base font-medium text-white text-center mt-[22px]">
+                <span className="font-['ZT_Nature'] text-xs sm:text-sm md:text-base font-medium text-white text-center mt-[16px] sm:mt-[22px] px-4 pb-4">
                   {level.name.split(' ').map((word, i) => (
                     <span key={i}>
                       {word}
@@ -134,19 +114,19 @@ function ClassNow() {
       </div>
 
                 
-      <div className="flex justify-between items-end px-8 md:px-16 lg:px-24 pb-8 md:pb-12 gap-4">
+      <div className="flex justify-between items-center px-4 sm:px-8 md:px-16 lg:px-24 pb-4 sm:pb-8 md:pb-12 gap-3 sm:gap-4 fixed bottom-0 left-0 right-0 bg-gradient-to-r from-[#020c02] to-[#041d05] pt-4">
         <button 
           onClick={handleGoBack}
-          className="h-14 px-8 py-2 flex justify-center items-center rounded-3xl border-4 border-[#1fb622] bg-transparent hover:bg-[#1fb622]/10 transition-colors cursor-pointer"
+          className="h-12 sm:h-14 px-4 sm:px-6 md:px-8 py-2 flex justify-center items-center rounded-2xl sm:rounded-3xl border-2 sm:border-4 border-[#1fb622] bg-transparent hover:bg-[#1fb622]/10 transition-colors cursor-pointer flex-1 sm:flex-initial"
         >
-          <span className="font-['ZT_Nature'] text-xl font-medium text-[#1fb622] whitespace-nowrap">Go back</span>
+          <span className="font-['ZT_Nature'] text-base sm:text-lg md:text-xl font-medium text-[#1fb622] whitespace-nowrap">Go back</span>
         </button>
         <button 
           onClick={handleContinue}
           disabled={!class_id}
-          className="h-14 px-8 py-2 flex justify-center items-center bg-gradient-to-b from-[#168318] to-[#1fb622] rounded-3xl shadow-[0_-2px_4px_0_rgba(255,255,255,0.5)_inset] hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-12 sm:h-14 px-4 sm:px-6 md:px-8 py-2 flex justify-center items-center bg-gradient-to-b from-[#168318] to-[#1fb622] rounded-2xl sm:rounded-3xl shadow-[0_-2px_4px_0_rgba(255,255,255,0.5)_inset] hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-initial"
         >
-          <span className="font-['ZT_Nature'] text-xl font-medium text-[#eeeeee] whitespace-nowrap">Continue</span>
+          <span className="font-['ZT_Nature'] text-base sm:text-lg md:text-xl font-medium text-[#eeeeee] whitespace-nowrap">Continue</span>
         </button>
       </div>
 

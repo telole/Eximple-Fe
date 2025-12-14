@@ -76,7 +76,7 @@ function ChooseSubject() {
   };
 
   const handleGoBack = () => {
-    navigate('/class-now');
+    navigate('/class-grade');
   };
 
   return (
@@ -87,7 +87,7 @@ function ChooseSubject() {
           <div className="w-12 h-12 relative">
             <div 
               className="w-full h-full bg-cover bg-center bg-no-repeat"
-              style={{backgroundImage: 'url(/img/getStartedImg/icon.png)'}}
+              style={{backgroundImage: 'url(/img/codia/logo-eximple.png)'}}
             ></div>
           </div>
           <span className="font-['Airlash_Raiders'] text-3xl font-normal bg-gradient-to-b from-[#1fb622] to-[#168318] bg-clip-text text-transparent">
@@ -100,7 +100,7 @@ function ChooseSubject() {
         <div className="absolute right-6 md:right-20 top-[5%] -translate-y-1/2 w-[300px] md:w-[400px] lg:w-[450px] aspect-square z-0 animate-[floatRealistic_5s_ease-in-out_infinite] hidden md:block pointer-events-none">
           <div 
             className="w-full h-full bg-cover bg-center bg-no-repeat"
-            style={{backgroundImage: 'url(/img/getStartedImg/mascotmodel4.png)'}}
+            style={{backgroundImage: 'url(/img/getStartedImg/mascotModel1.png)'}}
           ></div>
         </div>
 
@@ -129,19 +129,19 @@ function ChooseSubject() {
               )}
             </div>
           ) : (
-            <div className="flex gap-4 md:gap-6 justify-center flex-wrap max-w-4xl">
+            <div className="flex gap-4 md:gap-6 justify-center flex-wrap max-w-4xl px-4">
               {subjects.map((subject) => (
                 <div
                   key={subject.id}
                   onClick={() => toggleSubject(subject.id)}
-                  className={`w-[240px] h-[288px] rounded-[32px] border-2 flex flex-col items-center cursor-pointer transition-all ${
+                  className={`w-full sm:w-[200px] md:w-[240px] h-auto min-h-[288px] sm:h-[288px] rounded-[32px] border-2 flex flex-col items-center cursor-pointer transition-all ${
                     subject_ids.includes(subject.id)
                       ? 'border-[#1fb622] border-4 bg-[rgba(31,182,34,0.15)]'
                       : 'border-[#aaaaaa] bg-[rgba(170,170,170,0.05)] hover:border-[#1fb622] hover:bg-[rgba(31,182,34,0.1)]'
                   }`}
                 >
-                  <div className="w-[241px] h-[132px] mt-[42px] bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url(/img/getStartedImg/bags.png)'}}></div>
-                  <span className="font-['ZT_Nature'] text-base font-medium text-white text-center mt-[32px] px-4">
+                  <div className="w-full max-w-[241px] h-[132px] mt-[42px] bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url(/img/getStartedImg/mascotmodel3.png)'}}></div>
+                  <span className="font-['ZT_Nature'] text-sm sm:text-base font-medium text-white text-center mt-[32px] px-4 pb-4">
                     {subject.title || subject.name || `Subject ${subject.id}`}
                   </span>
                 </div>

@@ -11,7 +11,6 @@ export function useLeaderboard() {
       await getMyRank(type);
     };
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
   const refresh = useCallback(async () => {

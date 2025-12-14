@@ -31,7 +31,7 @@ export function useLogin() {
       if (result.data.user.profile_complete) {
         navigate('/journey');
       } else {
-        navigate('/class-grade');
+        navigate('/class-now');
       }
     } else {
       setFormError(result.error || 'Login failed');

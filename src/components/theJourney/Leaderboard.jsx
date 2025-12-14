@@ -23,21 +23,21 @@ function Leaderboard() {
 
   const topThree = leaderboardArray.slice(0, 3).map((player, index) => ({
     rank: player.rank || index + 1,
-    name: player.full_name || player.username || 'Anonymous',
+    name:  player.username || 'Anonymous',
     score: formatScore(player.points || player.total_points || 0),
-    avatar: player.avatar_url || player.profile?.avatar_url || `https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/${index === 0 ? 'gXPhA1MN1F' : index === 1 ? 'ANh0XBr97G' : 'gTx4VSu8hQ'}.png`,
-    podium: `https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/${index === 0 ? '6jmuEM8hR8' : index === 1 ? 'FndapZgwtV' : 'cBXyqu8i0g'}.png`,
+    avatar: player.avatar_url || player.profile?.avatar_url || `/img/codia/${index === 0 ? 'leaderboard-avatar-1st' : index === 1 ? 'leaderboard-avatar-2nd' : 'leaderboard-avatar-3rd'}.svg`,
+    podium: `/img/codia/${index === 0 ? 'leaderboard-podium-1st' : index === 1 ? 'leaderboard-podium-2nd' : 'leaderboard-podium-3rd'}.svg`,
     height: index === 0 ? '281px' : index === 1 ? '201px' : '164px',
     isFirst: index === 0,
-    icon: `https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/${index === 0 ? '3AvDPy1UuS' : index === 1 ? 'jmzU0FQoDz' : 'ZzyrKYWLZ7'}.png`,
+    icon: `/img/codia/${index === 0 ? 'leaderboard-icon-1st' : index === 1 ? 'leaderboard-icon-2nd' : 'leaderboard-icon-3rd'}.svg`,
   }));
 
   const leaderboardRows = leaderboardArray.slice(3, 10).map((player, i) => ({
     rank: player.rank || i + 4,
     name: player.full_name || player.username || 'Anonymous',
     score: formatScore(player.points || player.total_points || 0),
-    avatar: player.avatar_url || player.profile?.avatar_url || `https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/${['Wudj9many8', 'x6ZfH9f2Nj', 'ZQs7RcLO3K', '940kXzoBR6', 'OxyWktkWVi', '9A6uXoxkab', 'sqU8TPA3nB'][i]}.png`,
-    icon: 'https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/jEKfUptwRL.png'
+    avatar: player.avatar_url || player.profile?.avatar_url || `/img/codia/leaderboard-avatar-${i + 4}.svg`,
+    icon: '/img/codia/leaderboard-icon-default.svg'
   }));
 
   // Early return for initial loading state
@@ -57,7 +57,7 @@ function Leaderboard() {
       <Navbar stats={stats} activePage="leaderboard" />
       
       <div className="w-full">
-        <div className="relative px-8 md:px-16 lg:px-20 pb-20">
+        <div className="relative px-4 sm:px-6 md:px-8 lg:px-16 xl:px-20 pb-20">
         {error && (
           <div className="mb-4 px-4 py-2 bg-red-500/20 border-2 border-red-500 rounded-lg">
             <p className="font-['ZT_Nature'] text-sm text-red-400 text-center">{error}</p>
@@ -82,39 +82,39 @@ function Leaderboard() {
           </div>
         ) : (
           <>
-            <div className="flex justify-center items-end gap-6 md:gap-12 lg:gap-2 mb-12 px-4">
+            <div className="flex justify-center items-end gap-2 sm:gap-4 md:gap-6 lg:gap-12 xl:gap-2 mb-8 sm:mb-12 px-2 sm:px-4">
               {topThree.length >= 3 ? (
                 [topThree[1], topThree[0], topThree[2]].map((player) => (
-                  <div key={player.rank} className="flex-1 max-w-[288px]">
+                  <div key={player.rank} className="flex-1 max-w-[120px] sm:max-w-[180px] md:max-w-[220px] lg:max-w-[288px]">
                     <div className="relative flex flex-col items-center">
-                      <div className={`relative -mb-10 w-20 h-20 bg-white/20 rounded-3xl overflow-hidden z-10 flex items-center justify-center ${player.isFirst ? 'shadow-[0_4px_0_0_#f4ee17]' : ''}`}>
-                        <div className="w-12 h-12 bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${player.avatar})`}}></div>
+                      <div className={`relative -mb-4 sm:-mb-6 md:-mb-8 lg:-mb-10 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-white/20 rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden z-10 flex items-center justify-center ${player.isFirst ? 'shadow-[0_2px_0_0_#f4ee17] sm:shadow-[0_3px_0_0_#f4ee17] md:shadow-[0_4px_0_0_#f4ee17]' : ''}`}>
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${player.avatar})`}}></div>
                       </div>
-                      <div className="w-full rounded-t-[40px] bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${player.podium})`, height: player.height}}></div>
-                      <div className="absolute top-[107px] left-1/2 -translate-x-1/2 text-center w-full">
-                        <span className="font-['ZT_Nature'] text-base font-medium text-[#eeeeee]">{player.name}</span>
+                      <div className={`w-full rounded-t-[20px] sm:rounded-t-[30px] md:rounded-t-[40px] bg-cover bg-center bg-no-repeat ${player.isFirst ? 'h-[140px] sm:h-[180px] md:h-[220px] lg:h-[281px]' : player.rank === 2 ? 'h-[100px] sm:h-[140px] md:h-[180px] lg:h-[201px]' : 'h-[90px] sm:h-[120px] md:h-[150px] lg:h-[164px]'}`} style={{backgroundImage: `url(${player.podium})`}}></div>
+                      <div className={`absolute ${player.isFirst ? 'top-[90px] sm:top-[120px] md:top-[150px] lg:top-[107px]' : player.rank === 2 ? 'top-[70px] sm:top-[95px] md:top-[120px] lg:top-[107px]' : 'top-[65px] sm:top-[85px] md:top-[105px] lg:top-[107px]'} left-1/2 -translate-x-1/2 text-center w-full px-1`}>
+                        <span className="font-['ZT_Nature'] text-xs sm:text-sm md:text-base font-medium text-[#eeeeee] truncate block">{player.name}</span>
                       </div>
-                      <div className="absolute top-[135px] left-1/2 -translate-x-1/2 flex items-center gap-2">
-                        <div className="w-6 h-6 bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${player.icon})`}}></div>
-                        <span className="font-['ZT_Nature'] text-base font-medium text-[#eeeeee]">{player.score}</span>
+                      <div className={`absolute ${player.isFirst ? 'top-[110px] sm:top-[145px] md:top-[175px] lg:top-[135px]' : player.rank === 2 ? 'top-[85px] sm:top-[115px] md:top-[145px] lg:top-[135px]' : 'top-[78px] sm:top-[103px] md:top-[128px] lg:top-[135px]'} left-1/2 -translate-x-1/2 flex items-center gap-1 sm:gap-2`}>
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${player.icon})`}}></div>
+                        <span className="font-['ZT_Nature'] text-xs sm:text-sm md:text-base font-medium text-[#eeeeee]">{player.score}</span>
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
                 topThree.map((player) => (
-                  <div key={player.rank} className="flex-1 max-w-[288px]">
+                  <div key={player.rank} className="flex-1 max-w-[120px] sm:max-w-[180px] md:max-w-[220px] lg:max-w-[288px]">
                     <div className="relative flex flex-col items-center">
-                      <div className={`relative -mb-10 w-20 h-20 bg-white/20 rounded-3xl overflow-hidden z-10 flex items-center justify-center ${player.isFirst ? 'shadow-[0_4px_0_0_#f4ee17]' : ''}`}>
-                        <div className="w-12 h-12 bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${player.avatar})`}}></div>
+                      <div className={`relative -mb-4 sm:-mb-6 md:-mb-8 lg:-mb-10 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-white/20 rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden z-10 flex items-center justify-center ${player.isFirst ? 'shadow-[0_2px_0_0_#f4ee17] sm:shadow-[0_3px_0_0_#f4ee17] md:shadow-[0_4px_0_0_#f4ee17]' : ''}`}>
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${player.avatar})`}}></div>
                       </div>
-                      <div className="w-full rounded-t-[40px] bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${player.podium})`, height: player.height}}></div>
-                      <div className="absolute top-[107px] left-1/2 -translate-x-1/2 text-center w-full">
-                        <span className="font-['ZT_Nature'] text-base font-medium text-[#eeeeee]">{player.name}</span>
+                      <div className={`w-full rounded-t-[20px] sm:rounded-t-[30px] md:rounded-t-[40px] bg-cover bg-center bg-no-repeat ${player.isFirst ? 'h-[140px] sm:h-[180px] md:h-[220px] lg:h-[281px]' : player.rank === 2 ? 'h-[100px] sm:h-[140px] md:h-[180px] lg:h-[201px]' : 'h-[90px] sm:h-[120px] md:h-[150px] lg:h-[164px]'}`} style={{backgroundImage: `url(${player.podium})`}}></div>
+                      <div className={`absolute ${player.isFirst ? 'top-[90px] sm:top-[120px] md:top-[150px] lg:top-[107px]' : player.rank === 2 ? 'top-[70px] sm:top-[95px] md:top-[120px] lg:top-[107px]' : 'top-[65px] sm:top-[85px] md:top-[105px] lg:top-[107px]'} left-1/2 -translate-x-1/2 text-center w-full px-1`}>
+                        <span className="font-['ZT_Nature'] text-xs sm:text-sm md:text-base font-medium text-[#eeeeee] truncate block">{player.name}</span>
                       </div>
-                      <div className="absolute top-[135px] left-1/2 -translate-x-1/2 flex items-center gap-2">
-                        <div className="w-6 h-6 bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${player.icon})`}}></div>
-                        <span className="font-['ZT_Nature'] text-base font-medium text-[#eeeeee]">{player.score}</span>
+                      <div className={`absolute ${player.isFirst ? 'top-[110px] sm:top-[145px] md:top-[175px] lg:top-[135px]' : player.rank === 2 ? 'top-[85px] sm:top-[115px] md:top-[145px] lg:top-[135px]' : 'top-[78px] sm:top-[103px] md:top-[128px] lg:top-[135px]'} left-1/2 -translate-x-1/2 flex items-center gap-1 sm:gap-2`}>
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${player.icon})`}}></div>
+                        <span className="font-['ZT_Nature'] text-xs sm:text-sm md:text-base font-medium text-[#eeeeee]">{player.score}</span>
                       </div>
                     </div>
                   </div>
@@ -123,26 +123,26 @@ function Leaderboard() {
             </div>
 
             {myRank && (
-              <div className="flex justify-center mb-8">
+              <div className="flex justify-center mb-6 sm:mb-8 px-4">
                 <div className="w-full max-w-md">
-                  <div className="text-center mb-4">
-                    <span className="font-['ZT_Nature'] text-base font-medium text-[#eeeeee]">Your rank:</span>
+                  <div className="text-center mb-3 sm:mb-4">
+                    <span className="font-['ZT_Nature'] text-sm sm:text-base font-medium text-[#eeeeee]">Your rank:</span>
                   </div>
-                  <div className="flex justify-between items-center px-8 py-3 bg-[rgba(31,182,34,0.1)] rounded-2xl">
-                    <span className="font-['ZT_Nature'] text-base font-medium text-[#eeeeee]">
+                  <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0 px-4 sm:px-6 md:px-8 py-3 bg-[rgba(31,182,34,0.1)] rounded-xl sm:rounded-2xl">
+                    <span className="font-['ZT_Nature'] text-sm sm:text-base font-medium text-[#eeeeee]">
                       #{myRank.rank || '-'}
                     </span>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
-                        <div className="w-4 h-4 bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/7imvjDDAMh.png)'}}></div>
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white/10 rounded-full flex items-center justify-center">
+                        <img src="/img/codia/leaderboard-icon-rank.svg" alt="Rank" className="w-3 h-3 sm:w-4 sm:h-4" />
                       </div>
-                      <span className="font-['ZT_Nature'] text-base font-medium text-[#eeeeee]">
+                      <span className="font-['ZT_Nature'] text-sm sm:text-base font-medium text-[#eeeeee] truncate max-w-[120px] sm:max-w-none">
                         {user?.username || user?.profile?.full_name || 'Pengguna'}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/jEKfUptwRL.png)'}}></div>
-                      <span className="font-['ZT_Nature'] text-base font-medium text-[#eeeeee]">
+                      <img src="/img/codia/leaderboard-icon-default.svg" alt="Points" className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <span className="font-['ZT_Nature'] text-sm sm:text-base font-medium text-[#eeeeee]">
                         {formatScore(myRank.points || myRank.total_points || 0)}
                       </span>
                     </div>
@@ -151,57 +151,57 @@ function Leaderboard() {
               </div>
             )}
 
-            <div className="w-full max-w-4xl mx-auto bg-[rgba(170,170,170,0.05)] rounded-[32px] p-6">
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex gap-2">
+            <div className="w-full max-w-4xl mx-auto bg-[rgba(170,170,170,0.05)] rounded-2xl sm:rounded-3xl md:rounded-[32px] p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-4 sm:mb-6">
+                <div className="flex gap-2 flex-wrap">
                   {['total', 'weekly', 'monthly'].map((t) => (
                     <button
                       key={t}
                       onClick={() => setType(t)}
                       disabled={isLoading}
-                      className={`px-4 py-2 rounded-3xl transition-colors ${
+                      className={`px-3 sm:px-4 py-2 rounded-2xl sm:rounded-3xl transition-colors ${
                         type === t
                           ? 'bg-[#1fb622] text-white'
                           : 'hover:bg-white/5 text-[#eeeeee]'
                       } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
-                      <span className="font-['ZT_Nature'] text-base font-medium capitalize">{t}</span>
+                      <span className="font-['ZT_Nature'] text-xs sm:text-sm md:text-base font-medium capitalize">{t}</span>
                     </button>
                   ))}
                 </div>
                 <button 
                   onClick={refresh}
                   disabled={isLoading}
-                  className="px-4 py-2 rounded-3xl hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 sm:px-4 py-2 rounded-2xl sm:rounded-3xl hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span className="font-['ZT_Nature'] text-base font-medium text-[#eeeeee]">
+                  <span className="font-['ZT_Nature'] text-xs sm:text-sm md:text-base font-medium text-[#eeeeee]">
                     {isLoading ? 'Loading...' : 'Show all'}
                   </span>
                 </button>
               </div>
-              <div className="flex items-center h-12 mb-2 px-4">
-                <span className="w-20 font-['ZT_Nature'] text-base font-medium text-white/50">Ranking</span>
-                <span className="flex-1 font-['ZT_Nature'] text-base font-medium text-white/50">Player</span>
-                <span className="w-32 font-['ZT_Nature'] text-base font-medium text-white/50 text-right">Highest Emerald</span>
+              <div className="hidden sm:flex items-center h-10 sm:h-12 mb-2 px-2 sm:px-4">
+                <span className="w-16 sm:w-20 font-['ZT_Nature'] text-xs sm:text-sm md:text-base font-medium text-white/50">Ranking</span>
+                <span className="flex-1 font-['ZT_Nature'] text-xs sm:text-sm md:text-base font-medium text-white/50">Player</span>
+                <span className="w-24 sm:w-32 font-['ZT_Nature'] text-xs sm:text-sm md:text-base font-medium text-white/50 text-right">Highest Emerald</span>
               </div>
               <div className="flex flex-col gap-2">
                 {leaderboardRows.length === 0 ? (
-                  <div className="text-center py-8 text-white/60 font-['ZT_Nature']">
+                  <div className="text-center py-6 sm:py-8 text-white/60 font-['ZT_Nature'] text-sm sm:text-base">
                     No more players to display
                   </div>
                 ) : (
                   leaderboardRows.map((row) => (
-                    <div key={row.rank} className="flex items-center h-12 bg-[rgba(31,182,34,0.1)] rounded-2xl px-4">
-                      <span className="w-20 font-['ZT_Nature'] text-base font-medium text-[#eeeeee]">{row.rank}</span>
-                      <div className="flex-1 flex items-center gap-3">
-                        <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
-                          <div className="w-4 h-4 bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${row.avatar})`}}></div>
+                    <div key={row.rank} className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-0 min-h-[60px] sm:h-12 bg-[rgba(31,182,34,0.1)] rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 sm:py-0">
+                      <span className="w-16 sm:w-20 font-['ZT_Nature'] text-xs sm:text-sm md:text-base font-medium text-[#eeeeee]">#{row.rank}</span>
+                      <div className="flex-1 flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0">
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${row.avatar})`}}></div>
                         </div>
-                        <span className="font-['ZT_Nature'] text-base font-medium text-[#eeeeee]">{row.name}</span>
+                        <span className="font-['ZT_Nature'] text-xs sm:text-sm md:text-base font-medium text-[#eeeeee] truncate flex-1">{row.name}</span>
                       </div>
-                      <div className="w-32 flex items-center justify-end gap-2">
-                        <div className="w-6 h-6 bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${row.icon})`}}></div>
-                        <span className="font-['ZT_Nature'] text-base font-medium text-[#eeeeee]">{row.score}</span>
+                      <div className="w-full sm:w-24 md:w-32 flex items-center justify-end sm:justify-end gap-2">
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-cover bg-center bg-no-repeat" style={{backgroundImage: `url(${row.icon})`}}></div>
+                        <span className="font-['ZT_Nature'] text-xs sm:text-sm md:text-base font-medium text-[#eeeeee]">{row.score}</span>
                       </div>
                     </div>
                   ))
@@ -211,7 +211,7 @@ function Leaderboard() {
           </>
         )}
 
-          <div className="absolute -top-20 md:-top-15 right-4 md:right-21 lg:right-16 w-[480px] h-[480px] bg-cover bg-center bg-no-repeat hidden lg:block pointer-events-none" style={{backgroundImage: 'url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-09/KaQcan1GZc.png)'}}></div>
+          <div className="absolute -top-20 md:-top-15 right-4 md:right-21 lg:right-16 w-[480px] h-[480px] bg-cover bg-center bg-no-repeat hidden lg:block pointer-events-none" style={{backgroundImage: 'url(/img/codia/leaderboard-background.png)'}}></div>
         </div>
       </div>
     </div>

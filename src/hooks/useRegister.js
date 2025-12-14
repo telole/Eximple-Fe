@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 import { validateRegisterForm } from '../utils/validation';
+import { formatRegistrationError } from '../utils/errorMessages';
 
 export function useRegister() {
   const navigate = useNavigate();
@@ -36,10 +37,37 @@ export function useRegister() {
       if (result.success) {
         navigate('/otp', { state: { email: formData.email } });
       } else {
-        setFormError(result.error || 'Registration failed');
+        // Format error message to be user-friendly
+        // Check if error has data property (from API error handler)
+        let errorToFormat = result.error;
+        if (result.error?.data) {
+          // Extract error from data.errors array or data.message
+          const data = result.error.data;
+          if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+            errorToFormat = data.errors.map(err => err.message || err).join(', ');
+          } else {
+            errorToFormat = data.message || data.error || result.error.message || 'Registration failed';
+          }
+        } else if (result.error?.message) {
+          errorToFormat = result.error.message;
+        }
+        const formattedError = formatRegistrationError(errorToFormat || 'Registration failed');
+        setFormError(formattedError);
       }
     } catch (error) {
-      setFormError(error.message || 'Registration failed. Please check your input.');
+      // Format error message to be user-friendly
+      // Check if error has data property (from API error handler)
+      let errorToFormat = error.message;
+      if (error.data) {
+        const data = error.data;
+        if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+          errorToFormat = data.errors.map(err => err.message || err).join(', ');
+        } else {
+          errorToFormat = data.message || data.error || error.message || 'Registration failed. Please check your input.';
+        }
+      }
+      const formattedError = formatRegistrationError(errorToFormat || 'Registration failed. Please check your input.');
+      setFormError(formattedError);
     }
   };
 

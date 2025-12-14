@@ -1,6 +1,8 @@
 import { parseResponse, handleApiError } from '../utils/apiErrorHandler';
 
-const API_BASE_URL = 'http://localhost:3000';
+// Get API base URL from environment variable
+// Default to localhost if not set
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
 async function apiRequest(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
@@ -19,9 +21,40 @@ async function apiRequest(endpoint, options = {}) {
     config.body = JSON.stringify(config.body);
   }
 
-  const response = await fetch(url, config);
-  const data = await parseResponse(response);
-  return handleApiError(data, response);
+  try {
+    const response = await fetch(url, config);
+    
+    // Handle network errors (CORS, connection failed, etc.)
+    if (!response.ok && response.status === 0) {
+      throw new Error('Network error. Periksa koneksi internet atau hubungi administrator jika masalah berlanjut.');
+    }
+    
+    // Parse response even if status is not ok to get error details
+    let data;
+    try {
+      data = await parseResponse(response);
+    } catch (parseError) {
+      // If parsing fails, create a basic error structure
+      data = { 
+        message: parseError.message || `Server error (${response.status})`,
+        error: `HTTP ${response.status}: ${response.statusText}`
+      };
+    }
+    
+    return handleApiError(data, response);
+  } catch (error) {
+    // If error already has status, it's from handleApiError - re-throw it
+    if (error.status) {
+      throw error;
+    }
+    
+    // Handle CORS and network errors
+    if (error.message.includes('CORS') || error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      throw new Error('Gagal terhubung ke server. Masalah CORS terdeteksi. Silakan hubungi administrator backend untuk mengaktifkan CORS atau gunakan proxy.');
+    }
+    // Re-throw other errors
+    throw error;
+  }
 }
 
 export const authAPI = {
@@ -179,7 +212,7 @@ export const learningAPI = {
   },
 
   getLevel: async (levelId) => {
-    return apiRequest(`/api/levels/${levelId}`, {
+    return apiRequest(`/api/learning/levels/${levelId}`, {
       method: 'GET',
     });
   },
@@ -220,6 +253,7 @@ export const progressAPI = {
   completeLevel: async (levelId) => {
     return apiRequest(`/api/progress/levels/${levelId}/complete`, {
       method: 'POST',
+      body: {}, // Empty body as per API documentation
     });
   },
 

@@ -22,6 +22,11 @@ const useAchievementsStore = create((set, get) => ({
     }
   },
 
+  // Alias for getAchievements
+  getAllAchievements: async () => {
+    return get().getAchievements();
+  },
+
   getMyAchievements: async () => {
     set({ isLoading: true, error: null });
     try {
@@ -40,7 +45,7 @@ const useAchievementsStore = create((set, get) => ({
       triggerAchievement(
         achievement.title || achievement.name,
         achievement.description,
-        achievement.icon_url ? 'a"���' : '���',
+        achievement.icon_url ? achievement.icon_url : '/img/codia/leaderboard-avatar-1st.svg',
         achievement.points_reward || 0
       );
     }
