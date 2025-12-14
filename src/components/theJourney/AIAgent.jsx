@@ -205,7 +205,7 @@ export default function AIAgent() {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div 
                   className="w-16 h-16 bg-cover bg-center bg-no-repeat"
-                  style={{backgroundImage: 'url(/img/codia/ai-agent-avatar.png)'}}
+                  style={{backgroundImage: 'url(/img/fullassets/ai-agent-avatar.png)'}}
                 ></div>
               </div>
             </div>
@@ -402,7 +402,7 @@ export default function AIAgent() {
                 <div className="w-[250px] sm:w-[300px] md:w-[350px] lg:w-[400px] xl:w-[450px] aspect-square relative z-0 animate-[float_3s_ease-in-out_infinite] order-2 md:order-1">
                   <div 
                     className="w-full h-full bg-cover bg-center bg-no-repeat"
-                    style={{backgroundImage: 'url(/img/codia/ai-agent-avatar.png)'}}
+                    style={{backgroundImage: 'url(/img/fullassets/ai-agent-avatar.png)'}}
                   ></div>
                 </div>
                 
@@ -425,7 +425,7 @@ export default function AIAgent() {
                     >
                       {msg.sender === 'bot' && (
                         <div className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 bg-cover bg-center bg-no-repeat mt-1"
-                          style={{backgroundImage: 'url(/img/codia/ai-agent-avatar.png)'}}
+                          style={{backgroundImage: 'url(/img/fullassets/ai-agent-avatar.png)'}}
                         ></div>
                       )}
                       <div
@@ -450,7 +450,7 @@ export default function AIAgent() {
                 {isSending && (
                   <div className="flex justify-start gap-4 items-start">
                     <div className="w-16 h-16 flex-shrink-0 bg-cover bg-center bg-no-repeat mt-1"
-                      style={{backgroundImage: 'url(/img/codia/ai-agent-avatar.png)'}}
+                      style={{backgroundImage: 'url(/img/fullassets/ai-agent-avatar.png)'}}
                     ></div>
                     <div className="bg-[rgba(170,170,170,0.1)] rounded-2xl p-4 border border-[rgba(170,170,170,0.2)]">
                       <div className="flex gap-2">
@@ -468,41 +468,36 @@ export default function AIAgent() {
         </div>
             
         <div className="w-full max-w-4xl mx-auto pb-6 pt-4">
-          <form onSubmit={handleSendMessage} className="relative flex items-end gap-4">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 bg-cover bg-center bg-no-repeat"
-              style={{backgroundImage: ''}}
-            ></div>
-            <div className="flex-1">
-              <div className="w-full bg-[rgba(170,170,170,0.05)] rounded-[16px] border border-[rgba(170,170,170,0.05)] p-3 sm:p-4 flex items-center gap-2 sm:gap-3 shadow-lg">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="What is the formula for the area of a circle?"
-                  disabled={isSending || !currentSession}
-                  className="flex-1 bg-transparent border-none outline-none font-['ZT_Nature'] text-base sm:text-lg md:text-[20px] font-medium text-[rgba(238,238,238,0.5)] placeholder:text-[rgba(238,238,238,0.5)]"
-                />
-                <button
-                  type="button"
-                  onClick={handleNewChat}
-                  className="w-[32px] h-[32px] sm:w-[38px] sm:h-[38px] flex items-center justify-center rounded-[8px] border border-[rgba(238,238,238,0.5)] hover:bg-white/10 transition-colors flex-shrink-0"
-                  title="New Chat"
-                >
-                  <img src="/img/codia/ai-agent-icon-1.svg" alt="New chat" className="w-[12px] h-[12px] sm:w-[14px] sm:h-[14px]" />
-                </button>
-                <button
-                  type="submit"
-                  disabled={!message.trim() || isSending || !currentSession}
-                  className="w-[32px] h-[32px] sm:w-[36px] sm:h-[38px] flex items-center justify-center bg-[#1fb622] rounded-[8px] hover:bg-[#168318] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
-                >
-                  <img src="/img/codia/ai-agent-icon-2.svg" alt="Send" className="w-[12px] h-[14px] sm:w-[14px] sm:h-[16px]" />
-                </button>
-              </div>
-              {(error || apiError) && (
-                <p className="text-red-400 font-['ZT_Nature'] text-sm mt-2">{error || apiError}</p>
-              )}
+          <form onSubmit={handleSendMessage} className="relative w-full">
+            <div className="w-full bg-[rgba(170,170,170,0.05)] rounded-[16px] border border-[rgba(170,170,170,0.05)] p-3 sm:p-4 flex items-center gap-2 sm:gap-3 shadow-lg">
+              <input
+                ref={inputRef}
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="What is the formula for the area of a circle?"
+                disabled={isSending || !currentSession}
+                className="flex-1 bg-transparent border-none outline-none font-['ZT_Nature'] text-base sm:text-lg md:text-[20px] font-medium text-[rgba(238,238,238,0.5)] placeholder:text-[rgba(238,238,238,0.5)]"
+              />
+              <button
+                type="button"
+                onClick={handleNewChat}
+                className="w-[32px] h-[32px] sm:w-[38px] sm:h-[38px] flex items-center justify-center rounded-[8px] border border-[rgba(238,238,238,0.5)] hover:bg-white/10 transition-colors flex-shrink-0"
+                title="New Chat"
+              >
+                <img src="/img/fullassets/ai-agent-icon-1.svg" alt="New chat" className="w-[12px] h-[12px] sm:w-[14px] sm:h-[14px]" />
+              </button>
+              <button
+                type="submit"
+                disabled={!message.trim() || isSending || !currentSession}
+                className="w-[32px] h-[32px] sm:w-[36px] sm:h-[38px] flex items-center justify-center bg-[#1fb622] rounded-[8px] hover:bg-[#168318] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+              >
+                <img src="/img/fullassets/ai-agent-icon-2.svg" alt="Send" className="w-[12px] h-[14px] sm:w-[14px] sm:h-[16px]" />
+              </button>
             </div>
+            {(error || apiError) && (
+              <p className="text-red-400 font-['ZT_Nature'] text-sm mt-2">{error || apiError}</p>
+            )}
           </form>
         </div>
       </div>
