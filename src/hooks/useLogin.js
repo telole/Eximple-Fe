@@ -58,7 +58,6 @@ export function useLogin() {
   };
 
   const handleGoogleError = (error) => {
-    console.error('Google OAuth Error:', error);
     if (error?.error === 'popup_closed_by_user') {
       setFormError('Google sign-in was cancelled. Please try again.');
     } else if (error?.error === 'access_denied') {

@@ -18,7 +18,7 @@ export default defineConfig(({ command }) => {
           deadCodeInjection: false,
           debugProtection: false,
           debugProtectionInterval: 0,
-          disableConsoleOutput: false,
+          disableConsoleOutput: true,
           identifierNamesGenerator: 'hexadecimal',
           log: false,
           numbersToExpressions: false,
@@ -60,7 +60,7 @@ export default defineConfig(({ command }) => {
       minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: false, // Set true jika ingin menghapus console.log
+          drop_console: true,
           drop_debugger: true,
         },
       },

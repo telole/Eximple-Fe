@@ -85,13 +85,11 @@ export function useRegister() {
         setFormError(result.error || 'Google registration failed. Please try again.');
       }
     } catch (error) {
-      console.error('Google registration error:', error);
       setFormError(error.message || 'Google registration failed. Please check your connection and try again.');
     }
   };
 
   const handleGoogleError = (error) => {
-    console.error('Google OAuth Error:', error);
     if (error?.error === 'popup_closed_by_user') {
       setFormError('Google sign-in was cancelled. Please try again.');
     } else if (error?.error === 'access_denied') {
